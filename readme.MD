@@ -45,3 +45,23 @@ mediassist/
 ├── requirements.txt    # The complete list of Python dependencies required to run the application
 ├── .env                # Environment variables (API Keys and DB URI)
 └── dummy_data/         # Directory containing sample medical PDFs for ingestion (*.pdf)
+
+## 🚀 Setup & Installation
+
+### 1. Prerequisites
+* Python 3.11+ 
+* A Neon Database account with a configured project.
+* A Google Gemini API key.
+
+### 2. Install Dependencies
+Clone the repository (or create a new folder with your files) and install the required packages:
+
+```bash
+pip install -r requirements.txt
+
+(Ensure google-genai is also installed for the latest Gemini SDK).
+**3. Environment Configuration
+*You will need to add your specific API keys and Database URIs directly into the scripts (or set them up as environment variables in a production setting). Create a .env file in the root directory:
+
+*GEMINI_API_KEY=your_google_gemini_api_key_here
+*NEON_DATABASE_URI=postgresql://user:password@host/dbname?sslmode=require
