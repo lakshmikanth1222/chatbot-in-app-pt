@@ -1,116 +1,47 @@
-🩺 MediAssist: AI-Powered Medical Record Assistant
-📖 Overview
-MediAssist is a secure, end-to-end Retrieval-Augmented Generation (RAG) system designed to help patients interact with and understand their personal medical documents.
+# 🩺 MediAssist: AI-Powered Medical Record Assistant
 
-The application architecture separates data ingestion, backend orchestration, and frontend user experience. It leverages local embedding models for secure document parsing, a cloud-based vector database for semantic search, and Google's Gemini 2.5 Flash LLM to act as a proactive, empathetic "temporary doctor" with strict clinical guardrails.
+## 📖 Overview
+[cite_start]MediAssist is a secure, end-to-end Retrieval-Augmented Generation (RAG) prototype designed to help patients interact with and understand their personal medical documents (such as CT scans, prescriptions, and lab results)[cite: 4, 5]. 
 
-🏗️ System Architecture
-The project is structured into three main workflows:
+[cite_start]The application architecture separates data ingestion, backend orchestration, and frontend user experience[cite: 14]. [cite_start]It leverages local embedding models for secure document parsing, a cloud-based vector database for semantic search, and Google's Gemini 2.5 Flash LLM to act as a proactive, empathetic "temporary doctor" with strict clinical guardrails[cite: 5, 9, 10, 11].
 
-Offline Data Ingestion (ingest_pdf.py)
+---
 
-Extracts text from raw medical PDFs using PyPDF.
+## 🏗️ System Architecture
 
-Generates 384-dimensional vector embeddings locally using FastEmbed (BAAI/bge-small-en-v1.5) to ensure privacy and eliminate API costs during ingestion.
+[cite_start]The project is structured into two primary workflows[cite: 14]:
 
-Upserts text chunks, metadata, and embeddings into a Neon Serverless PostgreSQL database.
+1.  [cite_start]**Offline Data Ingestion (`ingest_pdf.py`) [cite: 15]**
+    * Reads raw medical PDF files from the local directory[cite: 16].
+    * [cite_start]Chunks the text and generates 384-dimensional vector embeddings locally using `FastEmbed` (`BAAI/bge-small-en-v1.5`) to ensure privacy and eliminate API costs during ingestion[cite: 10, 17].
+    * [cite_start]Upserts the text chunks, vectors, and metadata into a Neon Serverless PostgreSQL database[cite: 18].
 
-FastAPI Backend (backend.py)
+2.  [cite_start]**Online Chat Interface (`app.py` / `frontend.py` & `backend.py`) [cite: 19]**
+    * [cite_start]**Frontend:** Captures user queries via a sleek Dark Mode Streamlit interface[cite: 20]. Features a secure mock-login portal and offers a chat interface alongside "Quick Insight" buttons.
+    * **Backend:** Acts as the secure middle layer handling authentication and LLM orchestration. Converts the query into a vector and performs a semantic similarity search against the Neon database to retrieve the top relevant medical document snippets[cite: 21, 22].
+    * [cite_start]**LLM Integration:** Constructs a strict system prompt combining the user query, retrieved context, and medical safety guardrails, then streams the generated, structured response from Gemini back to the user[cite: 23, 24].
 
-Acts as the secure middle layer handling authentication and LLM orchestration.
+---
 
-Embeds incoming user queries using Google's text-embedding-004 (explicitly truncated to 384 dimensions to match the database schema).
+## 💻 Tech Stack
 
-Performs Cosine Similarity vector searches via PostgreSQL's pgvector extension.
+* [cite_start]**Frontend UI:** Streamlit [cite: 7]
+* **AI Orchestration:** LlamaIndex [cite: 8]
+* [cite_start]**Large Language Model (LLM):** Google Gemini 2.5 Flash [cite: 9]
+* [cite_start]**Embedding Model:** FastEmbed (BAAI/bge-small-en-v1.5) - Runs locally for zero API costs and enhanced privacy[cite: 10].
+* **Vector Database:** Neon Serverless PostgreSQL (utilizing the pgvector extension) [cite: 11]
+* [cite_start]**Document Parsing:** PyPDF [cite: 12]
 
-Constructs a highly structured prompt enforcing strict guidelines (Bottom-Line-Up-Front directness, no context dumping, and medical disclaimers) and queries the Gemini 2.5 Flash model.
+---
 
-Streamlit Frontend (frontend.py)
+## 📁 Project Structure
 
-Provides a responsive, Dark Mode UI for patients.
-
-Features a secure mock-login portal (validating Name and Date of Birth against the database).
-
-Offers a chat interface alongside "Quick Insight" buttons for one-click access to health summaries, medication interactions, and diet plans.
-
-💻 Tech Stack
-Frontend Interface: Streamlit, Requests
-
-Backend Framework: FastAPI, Uvicorn, Pydantic
-
-Database: Neon Serverless PostgreSQL, asyncpg, pgvector
-
-Large Language Model (LLM): Google Gemini 2.5 Flash (via google-genai SDK)
-
-Embedding Models: * Ingestion: FastEmbed (BAAI/bge-small-en-v1.5) via LlamaIndex.
-
-Querying: Gemini text-embedding-004 (Configured for 384 Output Dimensionality).
-
-Document Parsing: LlamaIndex Core, PyPDF
-
-📁 Project Structure
-Plaintext
+```text
 mediassist/
 │
-├── ingest_pdf.py       # Offline data pipeline for chunking and embedding PDFs
+[cite_start]├── ingest_pdf.py       # Offline data pipeline for chunking and embedding PDFs [cite: 52]
 ├── backend.py          # FastAPI application for DB connections and AI orchestration
-├── frontend.py         # Streamlit chat interface and secure portal UI
-├── requirements.txt    # Python dependencies
+[cite_start]├── frontend.py         # Streamlit chat interface and secure portal UI (formerly app.py) [cite: 51]
+[cite_start]├── requirements.txt    # The complete list of Python dependencies required to run the application [cite: 53]
 ├── .env                # Environment variables (API Keys and DB URI)
-└── dummy_data/         # Directory containing sample medical PDFs for ingestion
-🚀 Setup & Installation
-1. Prerequisites
-Python 3.10+
-
-A Neon Database account with the pgvector extension enabled.
-
-A Google Gemini API Key.
-
-2. Install Dependencies
-Clone the repository and install the required packages:
-
-Bash
-pip install -r requirements.txt
-pip install google-genai  # Ensure the latest Google GenAI SDK is installed
-3. Environment Configuration
-Create a .env file in the root directory and add your credentials:
-
-Code snippet
-GEMINI_API_KEY=your_google_gemini_api_key_here
-NEON_DATABASE_URI=postgresql://user:password@host/dbname?sslmode=require
-⚙️ Usage Instructions
-Step 1: Ingest Medical Records
-Place your medical PDFs (e.g., ct_scan_results.pdf, prescriptions.pdf) into a folder named dummy_data in the root directory.
-Run the ingestion script to parse, embed, and upload the data to your database:
-
-Bash
-python ingest_pdf.py
-Note: The ingestion process runs locally using FastEmbed, meaning it does not consume Gemini API credits.
-
-Step 2: Start the Backend Server
-Open a terminal and start the FastAPI server:
-
-Bash
-uvicorn backend:app --reload
-The backend will run on http://127.0.0.1:8000. You can view the API documentation at http://127.0.0.1:8000/docs.
-
-Step 3: Launch the Frontend App
-Open a second terminal window and start the Streamlit UI:
-
-Bash
-streamlit run frontend.py
-A browser window will automatically open at http://localhost:8501. Log in using patient credentials that exist in your patient database table (e.g., Name: "Arjun Mehta", DOB: "1982-11-30").
-
-🔌 API Endpoints (Backend)
-GET /health: Health check endpoint verifying Database and Gemini API connectivity.
-
-POST /login: Authenticates a user based on exact matches of name and password (mapped to Date of Birth) in the database. Returns patient metadata.
-
-POST /chat: The core RAG endpoint. Accepts a patient_id and a message. Performs vector retrieval against patient records, synthesizes context, and returns a formatted medical insight from the LLM.
-
-🛡️ Security & Privacy Guardrails
-Data Isolation: The semantic search query (backend.py) uses a strict WHERE metadata->>'patient_id' = $2 clause. A patient can only retrieve their own embedded records.
-
-AI System Prompting: The LLM is heavily constrained by system instructions to prevent hallucination. It is instructed to only answer based on the retrieved context, use direct BLUF (Bottom-Line-Up-Front) formatting, and avoid context dumping.
-
-Mandatory Disclaimer: Every response programmatically includes a medical disclaimer emphasizing that MediAssist is an AI prototype and not a licensed healthcare provider.
+[cite_start]└── dummy_data/         # Directory containing sample medical PDFs for ingestion (*.pdf) [cite: 54]
