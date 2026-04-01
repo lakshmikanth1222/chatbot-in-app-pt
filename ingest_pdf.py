@@ -16,7 +16,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 # 1. CONFIGURATION
 # ==========================================
 # No API keys needed for ingestion anymore! It is 100% local.
-NEON_DATABASE_URI = "postgresql://neondb_owner:npg_Wt1zuaco6Vsv@ep-proud-sun-a16kwegi-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require" 
+NEON_DATABASE_URI = "" 
 DATA_FOLDER = "dummy_data"
 
 # ==========================================
