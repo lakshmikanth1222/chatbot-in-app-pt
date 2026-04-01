@@ -1,0 +1,27 @@
+# requirements.txt
+
+# FastAPI Backend
+fastapi>=0.104.1
+uvicorn[standard]>=0.24.0
+pydantic>=2.5.0
+
+# LlamaIndex
+llama-index-core
+llama-index-llms-nvidia
+llama-index-embeddings-huggingface
+llama-index-vector-stores-postgres
+
+# Database
+psycopg2-binary
+asyncpg
+
+# Streamlit Frontend
+streamlit
+requests
+
+# Voice Recognition
+SpeechRecognition
+pyaudio
+
+# Utilities
+python-dotenv
